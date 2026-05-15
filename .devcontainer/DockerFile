@@ -1,8 +1,19 @@
-FROM osrf/ros:lyrical-desktop
+FROM osrf/ros:rolling-desktop
+
+# Install tools needed to add the Gazebo repository
+RUN apt-get update && apt-get install -y \
+    curl \
+    lsb-release \
+    gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
+# Add Gazebo package repository
+RUN curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 
 # install gazebo jetty and stuff
 RUN apt-get update && apt-get install -y \
     gz-sim10-server \
-    ros-lyrical-ros-gz \
-    ros-lyrical-foxglove-bridge \
+    ros-rolling-ros-gz \
+    ros-rolling-foxglove-bridge \
     && rm -rf /var/lib/apt/lists/*
