@@ -1,4 +1,4 @@
-FROM osrf/ros:rolling-desktop
+FROM osrf/ros:jazzy-desktop
 
 # Install tools needed to add the Gazebo repository
 RUN apt-get update && apt-get install -y \
@@ -11,9 +11,9 @@ RUN apt-get update && apt-get install -y \
 RUN curl https://packages.osrfoundation.org/gazebo.gpg --output /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] https://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
 
-# install gazebo jetty and stuff
+# install gazebo harmonic and ros integration
 RUN apt-get update && apt-get install -y \
-    gz-sim10-server \
-    ros-rolling-ros-gz \
-    ros-rolling-foxglove-bridge \
+    gz-harmonic \
+    ros-jazzy-ros-gz \
+    ros-jazzy-foxglove-bridge \
     && rm -rf /var/lib/apt/lists/*
