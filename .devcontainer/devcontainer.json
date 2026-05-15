@@ -1,5 +1,5 @@
 {
-    "name": "ROS 2 Lyrical & Gazebo Jetty Environment",
+    "name": "ROS 2 Jazzy & Gazebo Harmonic Environment",
     "build": {
         "dockerfile": "DockerFile"
     },
