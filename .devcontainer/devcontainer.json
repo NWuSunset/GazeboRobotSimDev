@@ -1,0 +1,25 @@
+{
+    "name": "ROS 2 Lyrical & Gazebo Jetty Environment",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "runArgs": [
+        "--gpus", "all",
+        "-e", "DISPLAY=${env:DISPLAY}",
+        "-e", "WAYLAND_DISPLAY=${env:WAYLAND_DISPLAY}",
+        "-e", "XDG_RUNTIME_DIR=${env:XDG_RUNTIME_DIR}",
+        "-e", "PULSE_SERVER=${env:PULSE_SERVER}",
+        "-v", "/tmp/.X11-unix:/tmp/.X11-unix:rw",
+        "-v", "/mnt/wslg:/mnt/wslg:ro"
+    ],
+    "forwardPorts": [8765],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-iot.vscode-ros",
+                "ms-python.python",
+                "ms-vscode.cpptools"
+            ]
+        }
+    }
+}
