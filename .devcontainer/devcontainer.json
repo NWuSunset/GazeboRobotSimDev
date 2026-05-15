@@ -4,15 +4,24 @@
         "dockerfile": "Dockerfile"
     },
     "runArgs": [
-        "--gpus", "all",
-        "-e", "DISPLAY=${env:DISPLAY}",
-        "-e", "WAYLAND_DISPLAY=${env:WAYLAND_DISPLAY}",
-        "-e", "XDG_RUNTIME_DIR=${env:XDG_RUNTIME_DIR}",
-        "-e", "PULSE_SERVER=${env:PULSE_SERVER}",
-        "-v", "/tmp/.X11-unix:/tmp/.X11-unix:rw",
-        "-v", "/mnt/wslg:/mnt/wslg:ro"
+        "--gpus",
+        "all",
+        "-e",
+        "DISPLAY=:0",
+        "-e",
+        "WAYLAND_DISPLAY=wayland-0",
+        "-e",
+        "XDG_RUNTIME_DIR=/mnt/wslg/runtime-dir",
+        "-e",
+        "PULSE_SERVER=/mnt/wslg/PulseServer",
+        "-v",
+        "/tmp/.X11-unix:/tmp/.X11-unix:rw",
+        "-v",
+        "/mnt/wslg:/mnt/wslg:ro"
     ],
-    "forwardPorts": [8765],
+    "forwardPorts": [
+        8765
+    ],
     "customizations": {
         "vscode": {
             "extensions": [
