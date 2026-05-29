@@ -1,8 +1,21 @@
 <?xml version="1.0"?>
-<sdf version="1.8">
+<sdf version="1.10">
     <model name='ball'>
+        <static>false</static>
 
         <link name='sphere'>
+            <inertial>
+                <mass>0.5</mass>
+                <inertia>
+                    <ixx>0.05</ixx>
+                    <iyy>0.05</iyy>
+                    <izz>0.05</izz>
+                    <ixy>0.0</ixy>
+                    <ixz>0.0</ixz>
+                    <iyz>0.0</iyz>
+                </inertia>
+            </inertial>
+
             <visual name='visual'>
                 <geometry>
                     <sphere>

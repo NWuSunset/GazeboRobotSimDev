@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<sdf version="1.8">
+<sdf version="1.10">
     <model name='pail'>
         <link name='cube'>
             <pose relative_to='__model__'>0 0 0 0 0 0</pose>

@@ -18,6 +18,11 @@
             name="gz::sim::systems::SceneBroadcaster">
         </plugin>
 
+        <plugin 
+            filename="gz-sim-apply-link-wrench-system"
+            name="gz::sim::systems::ApplyLinkWrench">
+        </plugin>
+
         <light type="directional" name="sun">
             <cast_shadows>true</cast_shadows>
             <pose>0 0 10 0 0 0</pose>
@@ -58,7 +63,7 @@
             </link>
         </model>
 
-        <!--Pail (only dropped with h1 data)-->
+        <!--Pail (only dropped with h1 data)
         <model name='pail'>
             <pose relative_to='world'>0 -3.0 3.0 0 0 0</pose>
             <include merge="true">
@@ -72,13 +77,13 @@
                 <uri>model://ball</uri>
             </inlcude>
             
-            <!--
+            
             <plugin filename="libball_launch_bridge.so" name="ball_launch_bridge">
                 <link_name>sphere</link_name>
                 <angle_topic>/ball_pail/launch_angle</angle_topic>
                 <velocity_topic>/ball_pail/launch_velocity</velocity_topic>
-            </plugin> -->
+            </plugin>
 
-        </model>
+        </model>  -->
     </world>
 </sdf>
