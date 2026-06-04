@@ -81,6 +81,18 @@ public:
         if (published_) {
           return;
         }
+        
+        // Wait until the ros_gz_bridge has actually subscribed to the topic
+        if (wrench_publisher_->get_subscription_count() == 0) {
+          return;
+        }
+        
+        // Wait an additional 1.5 seconds (3 ticks) for Gazebo physics & entities to settle
+        if (ready_ticks_ < 3) {
+          ready_ticks_++;
+          return;
+        }
+
         published_ = true;
         publishSolution();
         publish_timer_->cancel();
@@ -149,6 +161,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::Float64MultiArray>::SharedPtr solution_publisher_;
   rclcpp::TimerBase::SharedPtr publish_timer_;
   bool published_{false};
+  int ready_ticks_{0};
   double ball_mass_{0.5};
   double impulse_duration_{0.001};
 };

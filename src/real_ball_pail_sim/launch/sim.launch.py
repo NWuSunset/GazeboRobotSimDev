@@ -18,34 +18,26 @@ def launch_setup(context, *args, **kwargs):
     pkg_ball_pail = get_package_share_directory('real_ball_pail_sim')
 
     world_template = os.path.join(pkg_ball_pail, 'worlds', 'ball_and_pail.sdf')
+    pail_model_path = os.path.join(pkg_ball_pail, 'models', 'pail', 'model.sdf')
+    ball_model_path = os.path.join(pkg_ball_pail, 'models', 'ball', 'model.sdf')
+
+    with open(world_template, 'r') as f:
+        world_sdf = f.read()
+
+    # Dynamically inject launch arguments and model paths into the SDF
+    world_sdf = world_sdf.replace('{h1}', str(h1)).replace('{h2}', str(h2)).replace('{s}', str(s))
+    world_sdf = world_sdf.replace('{pail_model_path}', pail_model_path)
+    world_sdf = world_sdf.replace('{ball_model_path}', ball_model_path)
+
+    generated_world_path = os.path.join('/tmp', 'ball_and_pail_generated.sdf')
+    with open(generated_world_path, 'w') as f:
+        f.write(world_sdf)
 
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
-        launch_arguments={'gz_args': world_template}.items()
-    )
-
-    spawn_pail = Node(
-        package='ros_gz_sim',
-        executable='create',
-        arguments=[
-            '-name', 'pail',
-            '-file', os.path.join(pkg_ball_pail, 'models', 'pail', 'model.sdf'),
-            '-x', str(s), '-y', '0.0', '-z', str(h1)
-        ],
-        output='screen'
-    )
-
-    spawn_ball = Node(
-        package='ros_gz_sim',
-        executable='create',
-        arguments=[
-            '-name', 'ball',
-            '-file', os.path.join(pkg_ball_pail, 'models', 'ball', 'model.sdf'),
-            '-x', '0.0', '-y', '0.0', '-z', str(h2)
-        ],
-        output='screen'
+        launch_arguments={'gz_args': generated_world_path}.items()
     )
 
     ball_properties_publisher = Node (
@@ -70,7 +62,7 @@ def launch_setup(context, *args, **kwargs):
         output='screen'
     )
 
-    return [gz_sim, bridge, spawn_pail, spawn_ball, ball_properties_publisher]
+    return [gz_sim, bridge, ball_properties_publisher]
 
 def generate_launch_description():
     return LaunchDescription([
