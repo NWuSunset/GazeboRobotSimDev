@@ -40,3 +40,4 @@ Thumbs.db
 *~
 *.swp
 *.swo
+log/latest_build

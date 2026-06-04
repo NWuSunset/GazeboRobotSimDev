@@ -40,6 +40,7 @@ def launch_setup(context, *args, **kwargs):
         launch_arguments={'gz_args': generated_world_path}.items()
     )
 
+    # Node that publishes angle and velocity to ball
     ball_properties_publisher = Node (
         package='real_ball_pail_sim',
         executable='ball_publisher',
@@ -53,6 +54,7 @@ def launch_setup(context, *args, **kwargs):
         }],
     )
 
+    # bridge ros and gazebo topics
     bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -64,6 +66,7 @@ def launch_setup(context, *args, **kwargs):
 
     return [gz_sim, bridge, ball_properties_publisher]
 
+# generate ros2 launch description.
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('h1', default_value='2.0'),

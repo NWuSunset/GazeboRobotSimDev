@@ -20,7 +20,7 @@ struct InputParameters
   double g{9.81};
 };
 
-struct ThrowSolution
+struct ThrowSolution //solution to ball pail problem, gives angle, collision time, collision height and velocity vector.
 {
   double theta_rad{0.0};
   double theta_deg{0.0};
@@ -33,10 +33,11 @@ struct ThrowSolution
 
 ThrowSolution computeSolution(const InputParameters &inputs)
 {
+  //references problem equations for finding solutions
   const double delta_h = inputs.h1 - inputs.h2;
-  const double theta_rad = std::atan2(delta_h, inputs.s);
-  const double theta_deg = theta_rad * 180.0 / std::acos(-1.0);
-  const double flight_distance = std::hypot(inputs.s, delta_h);
+  const double theta_rad = std::atan2(delta_h, inputs.s); 
+  const double theta_deg = theta_rad * 180.0 / std::acos(-1.0); // rad * (180/pi)
+  const double flight_distance = std::hypot(inputs.s, delta_h); // sqrt(s^2 + (h1-h2)^2) for flight distance (or v0*flight_time)
   const double time_to_collision = flight_distance / inputs.v0;
   const double collision_height = inputs.h1 - 0.5 * inputs.g * time_to_collision * time_to_collision;
 
@@ -46,13 +47,13 @@ ThrowSolution computeSolution(const InputParameters &inputs)
   solution.time_to_collision = time_to_collision;
   solution.collision_height = collision_height;
   solution.vx0 = inputs.v0 * std::cos(theta_rad);
-  solution.vy0 = 0.0;
+  solution.vy0 = 0.0; // only 2d simulation
   solution.vz0 = inputs.v0 * std::sin(theta_rad);
   return solution;
 }
 }  // namespace
 
-class BallPublisherNode : public rclcpp::Node
+class BallPublisherNode : public rclcpp::Node //ros publisher node
 {
 public:
   BallPublisherNode()
@@ -64,17 +65,19 @@ public:
     inputs_.v0 = declare_parameter<double>("v0", 1.0);
     inputs_.g = declare_parameter<double>("g", 9.81);
     ball_mass_ = declare_parameter<double>("ball_mass", 0.5);
-    impulse_duration_ = declare_parameter<double>("impulse_duration", 0.001);
+    impulse_duration_ = declare_parameter<double>("impulse_duration", 0.001); //duration to apply impulse (short time period force)
 
     angle_topic_ = declare_parameter<std::string>("angle_topic", "ball_pail/launch_angle");
     wrench_topic_ = declare_parameter<std::string>("wrench_topic", "ball_pail/wrench");
     solution_topic_ = declare_parameter<std::string>("solution_topic", "ball_pail/solution");
 
+    //Quality of Service to ensure correct topic publishing and saving the last message to be sent to newly launched nodes
     const auto qos = rclcpp::QoS(1).reliable().transient_local();
     angle_publisher_ = create_publisher<std_msgs::msg::Float64>(angle_topic_, qos);
     wrench_publisher_ = create_publisher<ros_gz_interfaces::msg::EntityWrench>(wrench_topic_, qos);
     solution_publisher_ = create_publisher<std_msgs::msg::Float64MultiArray>(solution_topic_, qos);
 
+    //execute the callback function after 500ms
     publish_timer_ = create_wall_timer(
       std::chrono::milliseconds(500),
       [this]() {
@@ -113,13 +116,14 @@ private:
     std_msgs::msg::Float64 angle_message;
     angle_message.data = solution.theta_rad;
 
+    //Calculate the amount of force needed to apply in the impulse timeframe to get correct velocity 
     ros_gz_interfaces::msg::EntityWrench wrench_message;
     wrench_message.entity.name = "ball";
     wrench_message.entity.type = ros_gz_interfaces::msg::Entity::MODEL;
-    wrench_message.wrench.force.x = ball_mass_ * solution.vx0 / impulse_duration_;
+    wrench_message.wrench.force.x = ball_mass_ * solution.vx0 / impulse_duration_; //force = mass * velocity/time or F=ma
     wrench_message.wrench.force.y = ball_mass_ * solution.vy0 / impulse_duration_;
     wrench_message.wrench.force.z = ball_mass_ * solution.vz0 / impulse_duration_;
-    wrench_message.wrench.torque.x = 0.0;
+    wrench_message.wrench.torque.x = 0.0; //No torque / rotational force
     wrench_message.wrench.torque.y = 0.0;
     wrench_message.wrench.torque.z = 0.0;
 
@@ -135,7 +139,7 @@ private:
     };
 
     angle_publisher_->publish(angle_message);
-    wrench_publisher_->publish(wrench_message);
+    wrench_publisher_->publish(wrench_message); //this is the only message published to the simulation (since we apply a quick for to simulate instant velocity)
     solution_publisher_->publish(solution_message);
 
     RCLCPP_INFO(
@@ -149,8 +153,7 @@ private:
     if (solution.collision_height < 0.0) {
       RCLCPP_WARN(get_logger(), "Predicted collision height is below ground for the current inputs.");
     }
-  }
-  //test 
+  } 
 
   InputParameters inputs_;
   std::string angle_topic_;
@@ -169,7 +172,7 @@ private:
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<BallPublisherNode>());
+  rclcpp::spin(std::make_shared<BallPublisherNode>()); //process data from node
   rclcpp::shutdown();
   return 0;
 }
