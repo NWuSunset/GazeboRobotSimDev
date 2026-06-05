@@ -1,0 +1,31 @@
+{
+    "name": "ROS 2 Jazzy & Gazebo Harmonic (Linux Native)",
+    "build": {
+        "dockerfile": "../DockerFile",
+        "context": ".."
+    },
+    "runArgs": [
+        "--gpus",
+        "all",
+        "-e",
+        "DISPLAY=${localEnv:DISPLAY}",
+        "-v",
+        "/tmp/.X11-unix:/tmp/.X11-unix:rw",
+        "-e",
+        "XAUTHORITY=${localEnv:XAUTHORITY}",
+        "-v",
+        "${localEnv:XAUTHORITY}:${localEnv:XAUTHORITY}:ro"
+    ],
+    "forwardPorts": [
+        8765
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-iot.vscode-ros",
+                "ms-python.python",
+                "ms-vscode.cpptools"
+            ]
+        }
+    }
+}
