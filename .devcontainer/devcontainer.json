@@ -4,8 +4,6 @@
         "dockerfile": "DockerFile"
     },
     "runArgs": [
-        "--gpus",
-        "all",
         "-e",
         "DISPLAY=:0",
         "-e",
